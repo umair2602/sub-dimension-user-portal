@@ -85,14 +85,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
             </MDBox>
             <MDBox color={light ? "white" : "inherit"}>
               <IconButton
-                sx={navbarIconButton}
-                size="small"
-                disableRipple
-                onClick={handleLogout} // Logout button
-              >
-                <Icon sx={iconsStyle}>logout</Icon> {/* Add logout icon */}
-              </IconButton>
-              <IconButton
                 size="small"
                 disableRipple
                 color="inherit"

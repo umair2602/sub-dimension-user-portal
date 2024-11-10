@@ -1,13 +1,10 @@
 import { useEffect } from "react";
-import { useLocation, NavLink, useNavigate } from "react-router-dom"; // Import useNavigate
+import { useLocation, NavLink, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
-import Link from "@mui/material/Link";
-import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import SidenavCollapse from "examples/Sidenav/SidenavCollapse";
 import SidenavRoot from "examples/Sidenav/SidenavRoot";
 import sidenavLogoLabel from "examples/Sidenav/styles/sidenav";
 import {
@@ -21,8 +18,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } = controller;
   const location = useLocation();
-  const collapseName = location.pathname.replace("/", "");
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   let textColor = "white";
 
@@ -31,8 +27,6 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   } else if (whiteSidenav && darkMode) {
     textColor = "inherit";
   }
-
-  const closeSidenav = () => setMiniSidenav(dispatch, true);
 
   useEffect(() => {
     function handleMiniSidenav() {
@@ -47,56 +41,10 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     return () => window.removeEventListener("resize", handleMiniSidenav);
   }, [dispatch, location]);
 
-  // Logout function
   const handleLogout = () => {
-    localStorage.removeItem("token"); 
+    localStorage.removeItem("token");
     navigate("/authentication/sign-in");
   };
-
-  const renderRoutes = routes.map(({ type, name, icon, title, noCollapse, key, href, route }) => {
-    let returnValue;
-
-    if (type === "collapse") {
-      returnValue = href ? (
-        <Link href={href} key={key} target="_blank" rel="noreferrer" sx={{ textDecoration: "none" }}>
-          <SidenavCollapse name={name} icon={icon} active={key === collapseName} noCollapse={noCollapse} />
-        </Link>
-      ) : (
-        <NavLink key={key} to={route}>
-          <SidenavCollapse name={name} icon={icon} active={key === collapseName} />
-        </NavLink>
-      );
-    } else if (type === "title") {
-      returnValue = (
-        <MDTypography
-          key={key}
-          color={textColor}
-          display="block"
-          variant="caption"
-          fontWeight="bold"
-          textTransform="uppercase"
-          pl={3}
-          mt={2}
-          mb={1}
-          ml={1}
-        >
-          {title}
-        </MDTypography>
-      );
-    } else if (type === "divider") {
-      returnValue = (
-        <Divider
-          key={key}
-          light={
-            (!darkMode && !whiteSidenav && !transparentSidenav) ||
-            (darkMode && !transparentSidenav && whiteSidenav)
-          }
-        />
-      );
-    }
-
-    return returnValue;
-  });
 
   return (
     <SidenavRoot
@@ -105,19 +53,6 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
       ownerState={{ transparentSidenav, whiteSidenav, miniSidenav, darkMode }}
     >
       <MDBox pt={3} pb={1} px={4} textAlign="center">
-        <MDBox
-          display={{ xs: "block", xl: "none" }}
-          position="absolute"
-          top={0}
-          right={0}
-          p={1.625}
-          onClick={closeSidenav}
-          sx={{ cursor: "pointer" }}
-        >
-          <MDTypography variant="h6" color="secondary">
-            <Icon sx={{ fontWeight: "bold" }}>close</Icon>
-          </MDTypography>
-        </MDBox>
         <MDBox component={NavLink} to="/" display="flex" alignItems="center">
           {brand && <MDBox component="img" src={brand} alt="Brand" width="2rem" />}
           <MDBox
@@ -136,14 +71,24 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
           (darkMode && !transparentSidenav && whiteSidenav)
         }
       />
+
       <List>
-        {renderRoutes}
-        {/* Logout Button */}
-        <NavLink to="#" onClick={handleLogout} style={{ textDecoration: "none" }}>
-          <MDTypography color={textColor} variant="button" fontWeight="medium" textAlign="center">
-            Logout
-          </MDTypography>
-        </NavLink>
+
+        <MDBox mb={2} px={4}>
+          <NavLink to="/dashboard" style={{ textDecoration: "none" }}>
+            <MDTypography color={textColor} variant="button" fontWeight="medium" textAlign="center">
+              Dashboard
+            </MDTypography>
+          </NavLink>
+        </MDBox>
+
+        <MDBox mt="auto" px={4} mb={2}>
+          <NavLink to="/authentication/sign-in" onClick={handleLogout} style={{ textDecoration: "none" }}>
+            <MDTypography color={textColor} variant="button" fontWeight="medium" textAlign="center">
+              Logout
+            </MDTypography>
+          </NavLink>
+        </MDBox>
       </List>
     </SidenavRoot>
   );

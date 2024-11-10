@@ -32,7 +32,7 @@ function Basic() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/users/login", {
+      const response = await axios.post("https://swkddnwcmm.us-east-1.awsapprunner.com/users/login", {
         username,
         password,
       });
@@ -41,9 +41,10 @@ function Basic() {
       localStorage.setItem("token", access_token);
 
       toast.success("Login successful!");
-      // navigate("/dashboard");
+      navigate("/dashboard");
     } catch (error) {
-      toast.error("Login failed: " + (error.response?.data?.message || "Please try again."));
+      console.log("error ",error)
+      toast.error("Login failed: " + (error.response?.data?.detail || "Please try again."));
     }
   };
 

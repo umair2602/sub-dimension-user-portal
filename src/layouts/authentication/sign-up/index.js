@@ -25,7 +25,7 @@ function Cover() {
     }
 
     try {
-      await axios.post("http://localhost:8000/users/waitlist", { name, email });
+      await axios.post("https://swkddnwcmm.us-east-1.awsapprunner.com/users/waitlist", { name, email });
       toast.success("You have been added to the waitlist!");
       setName("");
       setEmail("");

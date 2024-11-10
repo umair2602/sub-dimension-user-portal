@@ -1,17 +1,10 @@
-
 import { useEffect } from "react";
-
-// react-router-dom components
 import { useLocation } from "react-router-dom";
-
-// prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
-
-// App name React components
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
 import MDBox from "components/MDBox";
-
-// App name React context
-import { useMaterialUIController, setLayout } from "context";
+import { useMaterialUIController, setLayout, setMiniSidenav } from "context";
 
 function DashboardLayout({ children }) {
   const [controller, dispatch] = useMaterialUIController();
@@ -22,27 +15,45 @@ function DashboardLayout({ children }) {
     setLayout(dispatch, "dashboard");
   }, [pathname]);
 
+  // Toggle function for miniSidenav state
+  const toggleMiniSidenav = () => {
+    setMiniSidenav(dispatch, !miniSidenav);
+  };
+
   return (
     <MDBox
       sx={({ breakpoints, transitions, functions: { pxToRem } }) => ({
         p: 3,
         position: "relative",
-
+        marginLeft: miniSidenav ? pxToRem(96) : pxToRem(250), // adjust margin based on sidebar width
+        transition: transitions.create(["margin-left"], {
+          easing: transitions.easing.easeInOut,
+          duration: transitions.duration.standard,
+        }),
         [breakpoints.up("xl")]: {
-          marginLeft: miniSidenav ? pxToRem(120) : pxToRem(274),
-          transition: transitions.create(["margin-left", "margin-right"], {
-            easing: transitions.easing.easeInOut,
-            duration: transitions.duration.standard,
-          }),
+          marginLeft: miniSidenav ? pxToRem(96) : pxToRem(250),
         },
       })}
     >
+      {/* Render the IconButton only when miniSidenav is true (sidebar is collapsed) */}
+      {miniSidenav && (
+        <IconButton
+          onClick={toggleMiniSidenav}
+          sx={{
+            position: "fixed",
+            top: "1rem",
+            left: "1rem",
+            zIndex: 1300,
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
+      )}
       {children}
     </MDBox>
   );
 }
 
-// Typechecking props for the DashboardLayout
 DashboardLayout.propTypes = {
   children: PropTypes.node.isRequired,
 };

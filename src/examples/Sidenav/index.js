@@ -13,6 +13,7 @@ import {
   setTransparentSidenav,
   setWhiteSidenav,
 } from "context";
+import Box from "@mui/material/Box";
 
 function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const [controller, dispatch] = useMaterialUIController();
@@ -72,24 +73,101 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
         }
       />
 
-      <List>
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        height: 'calc(100vh - 100px)', // Adjust based on your header height
+        pt: 2
+      }}>
+        <List sx={{ width: '100%' }}>
+          <MDBox mb={2}>
+            <NavLink 
+              to="/dashboard" 
+              style={{ 
+                textDecoration: "none",
+                display: 'block',
+                padding: '8px 32px',
+              }}
+            >
+              <MDTypography 
+                color={textColor} 
+                variant="button" 
+                fontWeight="medium" 
+                textAlign="center"
+                sx={{ 
+                  display: 'block',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-1px)',
+                  }
+                }}
+              >
+                Dashboard
+              </MDTypography>
+            </NavLink>
+          </MDBox>
 
-        <MDBox mb={2} px={4}>
-          <NavLink to="/dashboard" style={{ textDecoration: "none" }}>
-            <MDTypography color={textColor} variant="button" fontWeight="medium" textAlign="center">
-              Dashboard
-            </MDTypography>
-          </NavLink>
-        </MDBox>
+          <MDBox mb={2}>
+            <NavLink 
+              to="/myfiles" 
+              style={{ 
+                textDecoration: "none",
+                display: 'block',
+                padding: '8px 32px',
+              }}
+            >
+              <MDTypography 
+                color={textColor} 
+                variant="button" 
+                fontWeight="medium" 
+                textAlign="center"
+                sx={{ 
+                  display: 'block',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-1px)',
+                  }
+                }}
+              >
+                My Files
+              </MDTypography>
+            </NavLink>
+          </MDBox>
+        </List>
 
-        <MDBox mt="auto" px={4} mb={2}>
-          <NavLink to="/authentication/sign-in" onClick={handleLogout} style={{ textDecoration: "none" }}>
-            <MDTypography color={textColor} variant="button" fontWeight="medium" textAlign="center">
+        <Box sx={{ 
+          mt: 'auto', 
+          mb: 3,
+          width: '100%'
+        }}>
+          <NavLink 
+            to="/authentication/sign-in" 
+            onClick={handleLogout} 
+            style={{ 
+              textDecoration: "none",
+              display: 'block',
+              padding: '8px 32px',
+            }}
+          >
+            <MDTypography 
+              color={textColor} 
+              variant="button" 
+              fontWeight="medium" 
+              textAlign="center"
+              sx={{ 
+                display: 'block',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  transform: 'translateY(-1px)',
+                  color: 'error.main'
+                }
+              }}
+            >
               Logout
             </MDTypography>
           </NavLink>
-        </MDBox>
-      </List>
+        </Box>
+      </Box>
     </SidenavRoot>
   );
 }

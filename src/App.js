@@ -1,113 +1,107 @@
-
-
-import { useState, useEffect, useMemo } from "react";
-
-// react-router components
+import { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-
-// @mui material components
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import Icon from "@mui/material/Icon";
+import { SnackbarProvider } from 'notistack';
 
-import MDBox from "components/MDBox";
-
-import Sidenav from "examples/Sidenav";
-
+// Themes & Components
 import theme from "assets/theme";
-
 import themeDark from "assets/theme-dark";
-
-// RTL plugins
-import createCache from "@emotion/cache";
-
+import Sidenav from "examples/Sidenav";
 import routes from "routes";
 
-import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
-
-// Images
+// Context & Images
+import { useMaterialUIController } from "context";
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 
+// Pages
+import Dashboard from "layouts/dashboard";
+import MyFiles from "layouts/myfiles";
+
 export default function App() {
-  const [controller, dispatch] = useMaterialUIController();
+  const [controller] = useMaterialUIController();
   const {
     miniSidenav,
     direction,
     layout,
-    openConfigurator,
     sidenavColor,
     transparentSidenav,
     whiteSidenav,
     darkMode,
   } = controller;
+
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const { pathname } = useLocation();
 
-
-  // Open sidenav when mouse enter on mini sidenav
-  const handleOnMouseEnter = () => {
+  // Handle sidenav mouse events
+  const handleMouseEnter = () => {
     if (miniSidenav && !onMouseEnter) {
-      setMiniSidenav(dispatch, false);
       setOnMouseEnter(true);
     }
   };
 
-  // Close sidenav when mouse leave mini sidenav
-  const handleOnMouseLeave = () => {
+  const handleMouseLeave = () => {
     if (onMouseEnter) {
-      setMiniSidenav(dispatch, true);
       setOnMouseEnter(false);
     }
   };
 
-  // Change the openConfigurator state
-
-  // Setting the dir attribute for the body element
+  // Set document direction
   useEffect(() => {
     document.body.setAttribute("dir", direction);
   }, [direction]);
 
-  // Setting page scroll to 0 when changing the route
+  // Reset scroll position on route change
   useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
+  // Generate routes
   const getRoutes = (allRoutes) =>
     allRoutes.map((route) => {
       if (route.collapse) {
         return getRoutes(route.collapse);
       }
-
       if (route.route) {
         return <Route exact path={route.route} element={route.component} key={route.key} />;
       }
-
       return null;
     });
 
+  return (
+    <SnackbarProvider maxSnack={3}>
 
-  return(
     <ThemeProvider theme={darkMode ? themeDark : theme}>
       <CssBaseline />
+      
       {layout === "dashboard" && (
-        <>
-          <Sidenav
-            color={sidenavColor}
-            brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-            brandName="My App"
-            routes={routes}
-            onMouseEnter={handleOnMouseEnter}
-            onMouseLeave={handleOnMouseLeave}
-          />
-        </>
+        <Sidenav
+          color={sidenavColor}
+          brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
+          brandName="My App"
+          routes={routes}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        />
       )}
-     
+
       <Routes>
+        {/* Define explicit routes first */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/myfiles" element={<MyFiles />} />
+        
+        {/* Then map any additional routes from your routes config */}
         {getRoutes(routes)}
-        <Route path="*" element={<Navigate to="/dashboard" />} />
+        
+        {/* Redirect root to dashboard */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        
+        {/* Catch any undefined routes */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </ThemeProvider>
+    </SnackbarProvider>
   );
 }

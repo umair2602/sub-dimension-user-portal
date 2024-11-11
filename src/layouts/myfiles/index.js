@@ -347,7 +347,7 @@ function Dashboard() {
   const handleUploadedFileDelete = async (file) => {
     try {
       const decodedToken = jwtDecode(storedToken);
-      await axios.delete(`http://127.0.0.1:8000/users/files/${decodedToken.sub}/${file.id}`);
+      await axios.delete(`https://swkddnwcmm.us-east-1.awsapprunner.com/users/files/${decodedToken.sub}/${file.id}`);
       
       // Remove the file from the UI
       setApiFiles(prevFiles => prevFiles.filter(f => f.id !== file.id));
@@ -625,7 +625,7 @@ function Dashboard() {
       setIsLoadingFiles(true);
       try {
         const decodedToken = jwtDecode(storedToken);
-        const response = await axios.get(`http://127.0.0.1:8000/users/files/${decodedToken.sub}`);
+        const response = await axios.get(`https://swkddnwcmm.us-east-1.awsapprunner.com/users/files/${decodedToken.sub}`);
         
         const formattedFiles = response.data.map(file => ({
           id: file.id,
@@ -822,7 +822,7 @@ function Dashboard() {
     
     try {
       const response = await axios.post(
-        'http://127.0.0.1:8000/users/uploadfiles', 
+        'https://swkddnwcmm.us-east-1.awsapprunner.com/users/uploadfiles', 
         formData, 
         {
           headers: {
@@ -848,7 +848,7 @@ function Dashboard() {
       
       // Refresh the uploaded files list
       const updatedFiles = await axios.get(
-        `http://127.0.0.1:8000/users/files/${decodedToken.sub}`
+        `https://swkddnwcmm.us-east-1.awsapprunner.com/users/files/${decodedToken.sub}`
       );
       setApiFiles(updatedFiles.data);
 
@@ -1013,7 +1013,7 @@ function Dashboard() {
     try {
       const decodedToken = jwtDecode(storedToken);
       const response = await axios.delete(
-        `http://127.0.0.1:8000/users/files/${decodedToken.sub}/${selectedUploadedFile.id}`,
+        `https://swkddnwcmm.us-east-1.awsapprunner.com/users/files/${decodedToken.sub}/${selectedUploadedFile.id}`,
         {
           headers: {
             Authorization: `Bearer ${storedToken}`

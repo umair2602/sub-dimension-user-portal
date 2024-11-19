@@ -16,6 +16,7 @@ const button = {
     containedSizeLarge: { ...contained.large },
     containedPrimary: { ...contained.primary },
     containedSecondary: { ...contained.secondary },
+    containedError: {...contained.error},
     outlined: { ...outlined.base },
     outlinedSizeSmall: { ...outlined.small },
     outlinedSizeLarge: { ...outlined.large },

@@ -146,9 +146,13 @@ const isValidFileType = (file) => {
     'text/plain',
     'application/vnd.ms-excel', // For some CSV files
     '.csv',
-    '.txt'
+    '.txt',
+    '.npd',
   ];
-  return validTypes.some(type => file.type === type || file.name.endsWith(type));
+
+  return validTypes.some(type =>
+    file.type === type || file.name.toLowerCase().endsWith(type.toLowerCase())
+  );
 };
 
 const PreviewModalDialog = styled(Dialog)(({ theme }) => ({
@@ -463,7 +467,7 @@ function Dashboard() {
                   <input
                     type="file"
                     multiple
-                    accept=".csv, .txt"
+                    accept=".csv, .txt, .npd"
                     hidden
                     onChange={handleFileUpload}
                   />
@@ -965,7 +969,7 @@ function Dashboard() {
           ))}
         </Box>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          Only .csv and .txt files are supported.
+          Only .csv, .txt and .npd files are supported.
         </Typography>
       </DialogContent>
       <DialogActions sx={{ 
@@ -1374,7 +1378,7 @@ function Dashboard() {
             <input
               type="file"
               multiple
-              accept=".csv, .txt"
+              accept=".csv, .txt, .npd"
               hidden
               onChange={handleFileUpload}
             />

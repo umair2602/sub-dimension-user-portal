@@ -2,6 +2,7 @@ import Dashboard from "layouts/dashboard";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import MyFiles from "layouts/myfiles";
+import Projects from "layouts/projects";
 import PrivateRoute from "components/PrivateRoute";
 
 // @mui icons
@@ -30,6 +31,18 @@ const routes = [
     component: (
       <PrivateRoute>
         <MyFiles />
+      </PrivateRoute>
+    ),
+  },
+  {
+    type: "collapse",
+    name: "Projects",
+    key: "projects",
+    icon: <FolderIcon fontSize="small" />,
+    route: "/projects",
+    component: (
+      <PrivateRoute>
+        <Projects />
       </PrivateRoute>
     ),
   },

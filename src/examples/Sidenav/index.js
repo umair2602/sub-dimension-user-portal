@@ -47,6 +47,12 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     navigate("/authentication/sign-in");
   };
 
+  const navLinks = [
+    { title: "Dashboard", path: "/dashboard" },
+    { title: "My Files", path: "/myfiles" },
+    { title: "Projects", path: "/projects" },
+  ];
+
   return (
     <SidenavRoot
       {...rest}
@@ -80,59 +86,34 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
         pt: 2
       }}>
         <List sx={{ width: '100%' }}>
-          <MDBox mb={2}>
-            <NavLink 
-              to="/dashboard" 
-              style={{ 
-                textDecoration: "none",
-                display: 'block',
-                padding: '8px 32px',
-              }}
-            >
-              <MDTypography 
-                color={textColor} 
-                variant="button" 
-                fontWeight="medium" 
-                textAlign="center"
-                sx={{ 
-                  display: 'block',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    transform: 'translateY(-1px)',
-                  }
+          {navLinks.map((link, index) => (
+            <MDBox mb={2} key={index}>
+              <NavLink
+                to={link?.path}
+                style={{
+                  textDecoration: "none",
+                  display: "block",
+                  padding: "8px 32px",
                 }}
               >
-                Dashboard
-              </MDTypography>
-            </NavLink>
-          </MDBox>
-
-          <MDBox mb={2}>
-            <NavLink 
-              to="/myfiles" 
-              style={{ 
-                textDecoration: "none",
-                display: 'block',
-                padding: '8px 32px',
-              }}
-            >
-              <MDTypography 
-                color={textColor} 
-                variant="button" 
-                fontWeight="medium" 
-                textAlign="center"
-                sx={{ 
-                  display: 'block',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    transform: 'translateY(-1px)',
-                  }
-                }}
-              >
-                My Files
-              </MDTypography>
-            </NavLink>
-          </MDBox>
+                <MDTypography
+                  color={textColor}
+                  variant="button"
+                  fontWeight="medium"
+                  textAlign="center"
+                  sx={{
+                    display: "block",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      transform: "translateY(-1px)",
+                    },
+                  }}
+                >
+                  {link.title}
+                </MDTypography>
+              </NavLink>
+            </MDBox>
+          ))}
         </List>
 
         <Box sx={{ 

@@ -19,6 +19,7 @@ import brandDark from "assets/images/logo-ct-dark.png";
 import Dashboard from "layouts/dashboard";
 import MyFiles from "layouts/myfiles";
 import Profile from "layouts/profile";
+import Projects from "layouts/projects";
 
 export default function App() {
   const [controller] = useMaterialUIController();
@@ -93,6 +94,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/myfiles" element={<MyFiles />} />
+        <Route path="/projects" element={<Projects />} />
         
         {/* Then map any additional routes from your routes config */}
         {getRoutes(routes)}

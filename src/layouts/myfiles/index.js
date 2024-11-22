@@ -25,6 +25,7 @@ import Collapse from '@mui/material/Collapse';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { useSnackbar } from 'notistack';
 import LinearProgress from '@mui/material/LinearProgress';
+import Visualization from "components/myfiles/visualization";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   margin: 0,
@@ -580,6 +581,7 @@ function Dashboard() {
                                 )}
                               </Box>
                             )}
+                            <Visualization visualData={parsedData[index]?.data}/>
                           </Box>
                         )}
                       </CardContent>

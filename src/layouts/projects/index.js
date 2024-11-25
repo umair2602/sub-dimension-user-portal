@@ -1,18 +1,12 @@
-import { Box, Button, Grid, Avatar, Typography, Tooltip } from "@mui/material";
-import CreateProjectDialog from "components/projects/CreateProjectDialog";
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Box, Button, Grid, Avatar, Typography, Tooltip } from "@mui/material";
+import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 
 const Projects = () => {
-  const projectData = useSelector((state) => state.projects);
+  const { projects } = useSelector((state) => state.projects);
   const navigate = useNavigate();
-
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  const handleOpen = () => setDialogOpen(true);
-  const handleClose = () => setDialogOpen(false);
 
   return (
     <DashboardLayout>
@@ -25,7 +19,7 @@ const Projects = () => {
         <Box sx={{ textAlign: "right" }}>
           <Button
             variant="contained"
-            onClick={handleOpen}
+            onClick={() => navigate(`/projects/create-project`)}
             color="primary"
             sx={{ color: "white !important" }}
           >
@@ -47,7 +41,7 @@ const Projects = () => {
             sx={{ maxHeight: "65vh", overflowY: "auto", marginTop: 2 }}
           >
             {/* Map existing projects */}
-            {projectData.map((project, index) => (
+            {projects.map((project, index) => (
               <Grid item key={index}>
                 <Box
                   sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}
@@ -110,7 +104,7 @@ const Projects = () => {
                     border: "2px dashed gray",
                     borderRadius: "10px",
                   }}
-                  onClick={handleOpen}
+                  onClick={() => navigate(`/projects/create-project`)}
                 >
                   <Typography variant="h3" sx={{ color: "gray" }}>
                     +
@@ -133,8 +127,6 @@ const Projects = () => {
             </Grid>
           </Grid>
         </Box>
-
-        <CreateProjectDialog open={dialogOpen} onClose={handleClose} />
       </Box>
     </DashboardLayout>
   );

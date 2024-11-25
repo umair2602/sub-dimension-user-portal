@@ -686,7 +686,7 @@ function Dashboard() {
     if (validFiles.length > 0) {
       setPreviewModalOpen(true);
       
-      setTimeout(() => {
+      setTimeout(() => { //
         setFiles(prevFiles => [...prevFiles, ...validFiles]);
         const newLoadingStates = {};
         validFiles.forEach(file => {
@@ -694,13 +694,13 @@ function Dashboard() {
         });
         setFileLoadingStates(prev => ({ ...prev, ...newLoadingStates }));
         validFiles.forEach(file => readFileContent(file));
-        setFilesSubmitted(false);
+        setFilesSubmitted(false); //
       }, 100);
     }
   };
 
   const readFileContent = (file) => {
-    setIsParsingFile(true);
+    setIsParsingFile(true); //
     const reader = new FileReader();
     
     reader.onload = (e) => {
@@ -734,7 +734,7 @@ function Dashboard() {
         ...prev,
         [file.name]: false
       }));
-      setIsParsingFile(false);
+      setIsParsingFile(false); //
     };
 
     reader.onerror = () => {
@@ -748,7 +748,7 @@ function Dashboard() {
         ...prev,
         [file.name]: false
       }));
-      setIsParsingFile(false);
+      setIsParsingFile(false); //
     };
 
     reader.readAsText(file);
@@ -768,7 +768,7 @@ function Dashboard() {
   const handleFileRemove = (index) => {
     setFiles(files.filter((_, i) => i !== index));
     setParsedData(parsedData.filter((_, i) => i !== index));
-    setFilesSubmitted(false);
+    setFilesSubmitted(false); //
   };
 
   const handleDragOver = (event) => {
@@ -811,11 +811,11 @@ function Dashboard() {
       });
       setFileLoadingStates(prev => ({ ...prev, ...newLoadingStates }));
       validFiles.forEach(file => readFileContent(file));
-      setFilesSubmitted(false);
+      setFilesSubmitted(false); //
       setPreviewModalOpen(true);
     }
     
-    setIsDragging(false);
+    setIsDragging(false); //
   };
 
   const handleSubmitFiles = () => {

@@ -20,6 +20,7 @@ import Dashboard from "layouts/dashboard";
 import MyFiles from "layouts/myfiles";
 import Profile from "layouts/profile";
 import Projects from "layouts/projects";
+import CreateProject from "layouts/projects/CreateProject";
 
 export default function App() {
   const [controller] = useMaterialUIController();
@@ -95,7 +96,7 @@ export default function App() {
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/myfiles" element={<MyFiles />} />
         <Route path="/projects" element={<Projects />} />
-        
+        <Route path="/projects/create-project" element={<CreateProject />} />
         {/* Then map any additional routes from your routes config */}
         {getRoutes(routes)}
         

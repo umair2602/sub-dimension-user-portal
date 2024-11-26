@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Typography,
   Button,
@@ -7,16 +7,42 @@ import {
   DialogContent,
   DialogActions,
   Box,
+  CircularProgress,
 } from "@mui/material";
 
-const PreviewDialog = ({ dialogOpen, setDialogOpen, selectedFileData }) => {
+const PreviewDialog = ({ dialogOpen, setDialogOpen, selectedFileData, setSelectedFileData }) => {
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (dialogOpen) {
+      setProgress(0);
+      setLoading(true);
+      const interval = setInterval(() => {
+        setProgress((prevProgress) => {
+          if (prevProgress >= 100) {
+            clearInterval(interval);
+            setLoading(false);
+            return 100;
+          }
+          return prevProgress + 10;
+        });
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [dialogOpen]);
+
+  const onDialogClose = () => {
+    setSelectedFileData([]);
+    setDialogOpen(false);
+  };
   return (
-    <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+    <Dialog open={dialogOpen} onClose={onDialogClose} maxWidth="xl" fullWidth>
       <DialogTitle>File Preview</DialogTitle>
       <DialogContent dividers>
         <Box
           sx={{
-            maxHeight: "300px",
+            height: "67vh",
             overflowY: "auto",
             border: "1px solid",
             borderColor: "divider",
@@ -24,7 +50,23 @@ const PreviewDialog = ({ dialogOpen, setDialogOpen, selectedFileData }) => {
             bgcolor: "background.paper",
           }}
         >
-          {selectedFileData && selectedFileData.length ? (
+          {loading ? (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <CircularProgress variant="determinate" value={progress} sx={{ color: "#007aff" }} />
+              {/* Percentage text */}
+              <Typography variant="h6" color="textSecondary">
+                {progress}% Loaded
+              </Typography>
+            </Box>
+          ) : selectedFileData && selectedFileData.length ? (
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr
@@ -51,7 +93,7 @@ const PreviewDialog = ({ dialogOpen, setDialogOpen, selectedFileData }) => {
                 </tr>
               </thead>
               <tbody>
-                {selectedFileData.slice(0, 5).map((row, rowIndex) => (
+                {selectedFileData.map((row, rowIndex) => (
                   <tr key={rowIndex}>
                     {Object.values(row).map((cell, cellIndex) => (
                       <td
@@ -76,7 +118,7 @@ const PreviewDialog = ({ dialogOpen, setDialogOpen, selectedFileData }) => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setDialogOpen(false)} color="primary">
+        <Button onClick={onDialogClose} color="primary">
           Close
         </Button>
       </DialogActions>

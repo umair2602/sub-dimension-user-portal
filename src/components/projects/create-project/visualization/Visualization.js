@@ -8,8 +8,11 @@ const Visualization = ({ files, parsedData }) => {
   const [selectedFileData, setSelectedFileData] = useState(null);
 
   const openVisualPreview = (index) => () => {
-    setSelectedFileData(parsedData[index]?.data || []);
     setVisualDialogOpen(true);
+    setSelectedFileData([]);
+    setTimeout(() => {
+      setSelectedFileData(parsedData[index]?.data || []);
+    }, 0);
   };
 
   const formatFileSize = (bytes) => {
@@ -19,14 +22,14 @@ const Visualization = ({ files, parsedData }) => {
   };
 
   return (
-    <>
-      <Typography variant="h5" sx={{ pb: 1 }}>
+    <Box sx={{ width: "70%", margin: "auto" }}>
+      <Typography variant="h5" sx={{ pb: 1, display: "flex", justifyContent: "center" }}>
         View visuals
       </Typography>
-      <Box sx={{ overflowY: "auto", height: 400 }}>
+      <Box sx={{ overflowY: "auto", height: 480 }}>
         {files.map((file, index) => (
           <Card key={`${file.name}-${index}`} sx={{ marginY: 2 }}>
-            <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+            <CardContent sx={{ p: 1, paddingLeft: 2, "&:last-child": { pb: 1 } }}>
               <Box
                 sx={{
                   display: "flex",
@@ -35,7 +38,7 @@ const Visualization = ({ files, parsedData }) => {
                 }}
               >
                 <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }}>
                     {file.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -58,8 +61,9 @@ const Visualization = ({ files, parsedData }) => {
         visualDialogOpen={visualDialogOpen}
         setVisualDialogOpen={setVisualDialogOpen}
         selectedFileData={selectedFileData}
+        setSelectedFileData={setSelectedFileData}
       />
-    </>
+    </Box>
   );
 };
 

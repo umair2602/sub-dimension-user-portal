@@ -27,33 +27,34 @@ const ProjectForm = ({ inputFields }) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column">
-      <Typography variant="h5" sx={{ pb: 1 }}>
+    <Box>
+      <Typography variant="h5" sx={{ pb: 1, display: "flex", justifyContent: "center" }}>
         Define project
       </Typography>
-      {inputFields.map((field) => (
-        <Box>
-          <Typography variant="subtitle2" sx={{ pb: 0.5, fontWeight: 500 }}>
-            {field.label}
-          </Typography>
+      <Box display="flex" flexDirection="column" sx={{ width: "40%", margin: "auto" }}>
+        {inputFields.map((field) => (
+          <Box key={field.name}>
+            <Typography variant="subtitle2" sx={{ pb: 0.5, fontWeight: 500 }}>
+              {field.label}
+            </Typography>
 
-          <TextField
-            key={field.name}
-            label=""
-            name={field.name}
-            value={formData[field.name]}
-            onChange={handleInputChange}
-            onBlur={handleBlur}
-            placeholder={field.placeholder}
-            multiline={field.multiline}
-            rows={field.rows}
-            required={field.required}
-            error={!!inputErrors[field.name]}
-            helperText={inputErrors[field.name] || " "}
-            fullWidth
-          />
-        </Box>
-      ))}
+            <TextField
+              label=""
+              name={field.name}
+              value={formData[field.name]}
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+              placeholder={field.placeholder}
+              multiline={field.multiline}
+              rows={field.rows}
+              required={field.required}
+              error={!!inputErrors[field.name]}
+              helperText={inputErrors[field.name] || " "}
+              fullWidth
+            />
+          </Box>
+        ))}
+      </Box>
     </Box>
   );
 };

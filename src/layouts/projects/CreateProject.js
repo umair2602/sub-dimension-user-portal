@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Stepper,
@@ -16,6 +16,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setInputError, resetExceptProjects } from "features/projects/projectsSlice";
 import { useNavigate } from "react-router-dom";
 import Visualization from "components/projects/create-project/visualization/Visualization";
+import GenerateReport from "components/projects/create-project/generate-report/GenerateReport";
 
 const steps = ["Step 1", "Step 2", "Step 3", "Step 4"];
 
@@ -27,6 +28,12 @@ const CreateProject = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [files, setFiles] = useState([]);
   const [parsedData, setParsedData] = useState([]);
+
+  useEffect(() => {
+    return () => {
+      resetStates();
+    };
+  }, []);
 
   const inputFields = [
     {
@@ -71,7 +78,7 @@ const CreateProject = () => {
       value: formData.details,
       placeholder: "Enter additional details",
       multiline: true,
-      rows: "4",
+      rows: "2",
       required: false,
     },
   ];
@@ -100,6 +107,10 @@ const CreateProject = () => {
 
   // Handle back button
   const handleBack = () => {
+    if (activeStep === 0) {
+      navigate(-1);
+      return;
+    }
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
@@ -133,7 +144,7 @@ const CreateProject = () => {
       case 2:
         return <Visualization files={files} parsedData={parsedData} />;
       case 3:
-        return <Typography>Generate Report</Typography>;
+        return <GenerateReport />;
       default:
         return null;
     }
@@ -150,93 +161,94 @@ const CreateProject = () => {
           justifyContent: "center",
         }}
       >
-        <Card>
-          <CardContent
-            sx={{
-              pt: 3,
-              width: { sm: "auto", md: 500, lg: 650 },
-              height: 591,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box>
-              <Box
-                sx={{
-                  pb: 3,
-                }}
-              >
-                <Stepper linear="true" activeStep={activeStep}>
-                  {steps.map((label) => (
-                    <Step key={label}>
-                      <StepLabel
-                        disabled
-                        StepIconProps={{
-                          sx: {
-                            "&.Mui-active": {
-                              color: "#007aff",
-                            },
-                            "&.Mui-completed": {
-                              color: "#007aff",
-                            },
-                          },
-                        }}
-                      >
-                        {label}
-                      </StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-              </Box>
-
-              {renderStepContent(activeStep)}
-            </Box>
+        <Box
+          sx={{
+            width: "100vw",
+            height: 591,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box>
             <Box
               sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                pt: 2,
+                pb: 3,
+                width: "70%",
+                margin: "auto",
               }}
             >
-              <Button disabled={activeStep === 0 || activeStep === 2} onClick={handleBack}>
-                Back
-              </Button>
-              <Box sx={{ display: "flex", gap: 1 }}>
-                {activeStep === 1 && (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleNext}
-                    sx={{ color: "white !important" }}
-                  >
-                    Save and Next
-                  </Button>
-                )}
-                {activeStep < steps.length - 1 && activeStep !== 1 && (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleNext}
-                    sx={{ color: "white !important" }}
-                  >
-                    Next
-                  </Button>
-                )}
-                {activeStep >= 2 && (
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    sx={{ color: "white !important" }}
-                    onClick={handleClose}
-                  >
-                    Close
-                  </Button>
-                )}
-              </Box>
+              <Stepper linear="true" activeStep={activeStep}>
+                {steps.map((label) => (
+                  <Step key={label}>
+                    <StepLabel
+                      disabled
+                      StepIconProps={{
+                        sx: {
+                          "&.Mui-active": {
+                            color: "#007aff",
+                          },
+                          "&.Mui-completed": {
+                            color: "#007aff",
+                          },
+                        },
+                      }}
+                    >
+                      {label}
+                    </StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
             </Box>
-          </CardContent>
-        </Card>
+
+            {renderStepContent(activeStep)}
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              pt: 2,
+              width: "70%",
+              margin: "auto",
+            }}
+          >
+            <Button disabled={activeStep === 2} onClick={handleBack}>
+              Back
+            </Button>
+            <Box sx={{ display: "flex", gap: 1 }}>
+              {activeStep === 1 && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleNext}
+                  sx={{ color: "white !important" }}
+                >
+                  Save and Next
+                </Button>
+              )}
+              {activeStep < steps.length - 1 && activeStep !== 1 && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleNext}
+                  sx={{ color: "white !important" }}
+                >
+                  {activeStep === 0 ? "Save" : "Next"}
+                </Button>
+              )}
+              {activeStep >= 2 && (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  sx={{ color: "white !important" }}
+                  onClick={handleClose}
+                >
+                  Close
+                </Button>
+              )}
+            </Box>
+          </Box>
+        </Box>
       </Box>
     </DashboardLayout>
   );

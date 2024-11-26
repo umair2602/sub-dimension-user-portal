@@ -179,8 +179,11 @@ const UploadFiles = ({ files, setFiles, parsedData, setParsedData }) => {
   };
 
   const openFilePreview = (index) => () => {
-    setSelectedFileData(parsedData[index]?.data || []);
     setDialogOpen(true);
+    setSelectedFileData([]);
+    setTimeout(() => {
+      setSelectedFileData(parsedData[index]?.data || []);
+    }, 0);
   };
 
   const formatFileSize = (bytes) => {
@@ -195,7 +198,7 @@ const UploadFiles = ({ files, setFiles, parsedData, setParsedData }) => {
   };
 
   return (
-    <>
+    <Box sx={{ width: "70%", margin: "auto" }}>
       <UploadSection
         elevation={3}
         onDragOver={handleDragOver}
@@ -221,10 +224,18 @@ const UploadFiles = ({ files, setFiles, parsedData, setParsedData }) => {
         </Typography>
       </UploadSection>
 
-      <Box sx={{ overflowY: "auto", height: 250, mt: 1 }}>
+      <Box sx={{ overflowY: "auto", height: 323, mt: 1 }}>
+        {files.length === 0 && (
+          <Box
+            sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}
+          >
+            <Typography>No files to show</Typography>
+          </Box>
+        )}
+
         {files.map((file, index) => (
           <Card key={`${file.name}-${index}`} sx={{ marginY: 2 }}>
-            <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+            <CardContent sx={{ p: 1, paddingLeft: 2, "&:last-child": { pb: 1 } }}>
               <Box
                 sx={{
                   display: "flex",
@@ -233,7 +244,7 @@ const UploadFiles = ({ files, setFiles, parsedData, setParsedData }) => {
                 }}
               >
                 <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "500" }}>
                     {file.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -273,8 +284,9 @@ const UploadFiles = ({ files, setFiles, parsedData, setParsedData }) => {
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         selectedFileData={selectedFileData}
+        setSelectedFileData={setSelectedFileData}
       />
-    </>
+    </Box>
   );
 };
 

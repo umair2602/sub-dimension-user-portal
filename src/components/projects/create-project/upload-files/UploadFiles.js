@@ -46,6 +46,7 @@ const GradientButton = styled(Button)(({ theme }) => ({
 const UploadFiles = ({ files, setFiles, parsedData, setParsedData }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [invalidFiles, setInvalidFiles] = useState([]);
+  const [checkNotPassedFiles, setCheckNotPassedFiles] = useState([]);
   const [invalidFilesModalOpen, setInvalidFilesModalOpen] = useState(false);
   const [fileLoadingStates, setFileLoadingStates] = useState({});
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -93,28 +94,53 @@ const UploadFiles = ({ files, setFiles, parsedData, setParsedData }) => {
   const processFiles = (uploadedFiles) => {
     const validFiles = [];
     const invalidFiles = [];
-    uploadedFiles.forEach((file) => {
-      if (isValidFileType(file)) {
-        validFiles.push(file);
-      } else {
-        invalidFiles.push(file);
-      }
+    const checkNotPassedFiles = [];
+
+    // Create an array of promises for all FileReader operations
+    const filePromises = uploadedFiles.map((file) => {
+      return new Promise((resolve) => {
+        if (isValidFileType(file)) {
+          const reader = new FileReader();
+
+          reader.onload = (e) => {
+            const text = e.target.result;
+            const validate = validateCSV(text);
+
+            if (validate) {
+              validFiles.push(file);
+            } else {
+              checkNotPassedFiles.push(file);
+            }
+
+            resolve(); // Resolve the promise once reading is done
+          };
+
+          reader.readAsText(file);
+        } else {
+          invalidFiles.push(file);
+          resolve(); // Resolve the promise for invalid files
+        }
+      });
     });
 
-    if (invalidFiles.length > 0) {
-      setInvalidFiles(invalidFiles);
-      setInvalidFilesModalOpen(true);
-    }
+    // Wait for all file reading operations to complete
+    Promise.all(filePromises).then(() => {
+      if (invalidFiles.length > 0 || checkNotPassedFiles.length > 0) {
+        setInvalidFiles(invalidFiles);
+        setCheckNotPassedFiles(checkNotPassedFiles);
+        setInvalidFilesModalOpen(true);
+      }
 
-    if (validFiles.length > 0) {
-      setFiles((prevFiles) => [...prevFiles, ...validFiles]);
-      const newLoadingStates = {};
-      validFiles.forEach((file) => {
-        newLoadingStates[file.name] = true;
-      });
-      setFileLoadingStates((prev) => ({ ...prev, ...newLoadingStates }));
-      validFiles.forEach((file) => readFileContent(file));
-    }
+      if (validFiles.length > 0) {
+        setFiles((prevFiles) => [...prevFiles, ...validFiles]);
+        const newLoadingStates = {};
+        validFiles.forEach((file) => {
+          newLoadingStates[file.name] = true;
+        });
+        setFileLoadingStates((prev) => ({ ...prev, ...newLoadingStates }));
+        validFiles.forEach((file) => readFileContent(file));
+      }
+    });
   };
 
   const readFileContent = (file) => {
@@ -170,12 +196,45 @@ const UploadFiles = ({ files, setFiles, parsedData, setParsedData }) => {
   const parseCSV = (text) => {
     const rows = text.split("\n").map((row) => row.split(",").map((cell) => cell.trim()));
     const headers = rows[0];
+
+    // Create unique headers by appending a counter to duplicates
+    const uniqueHeaders = headers.map((header, idx, self) => {
+      let count = 0;
+      return self.slice(0, idx).filter((h) => h === header).length > 0
+        ? `${header} (${++count + self.slice(0, idx).filter((h) => h === header).length})`
+        : header;
+    });
+
     return rows.slice(1).map((row) =>
       row.reduce((acc, curr, idx) => {
-        acc[headers[idx]] = curr;
+        acc[uniqueHeaders[idx]] = curr;
         return acc;
       }, {})
     );
+  };
+
+  const validateCSV = (text) => {
+    const rows = text
+      .split("\n")
+      .map((row) => row.trim().replace(/,+$/, "")) // Remove trailing commas
+      .map((row) => row.split(",").map((cell) => cell.trim())) // Split into cells and trim
+      .filter((row) => row.length > 1 || row.some((cell) => cell !== "")); // Skip empty rows
+
+    if (rows.length === 0) {
+      return false;
+    }
+
+    const headers = rows[0];
+
+    let isValid = true;
+
+    for (let i = 1; i < rows.length; i++) {
+      if (rows[i].length !== headers.length) {
+        isValid = false;
+      }
+    }
+
+    return isValid;
   };
 
   const openFilePreview = (index) => () => {
@@ -277,6 +336,7 @@ const UploadFiles = ({ files, setFiles, parsedData, setParsedData }) => {
       <InvalidFilesDialog
         invalidFilesModalOpen={invalidFilesModalOpen}
         setInvalidFilesModalOpen={setInvalidFilesModalOpen}
+        checkNotPassedFiles={checkNotPassedFiles}
         invalidFiles={invalidFiles}
       />
 

@@ -15,12 +15,21 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
     borderRadius: theme.spacing(2),
     padding: theme.spacing(2),
-    maxWidth: "400px",
+    maxWidth: "500px",
     width: "100%",
   },
 }));
 
-const InvalidFilesDialog = ({ invalidFilesModalOpen, setInvalidFilesModalOpen, invalidFiles }) => {
+const InvalidFilesDialog = ({
+  invalidFilesModalOpen,
+  checkNotPassedFiles,
+  setInvalidFilesModalOpen,
+  invalidFiles,
+}) => {
+  const truncateText = (text, maxLength) => {
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+
   return (
     <StyledDialog
       open={invalidFilesModalOpen}
@@ -37,8 +46,8 @@ const InvalidFilesDialog = ({ invalidFilesModalOpen, setInvalidFilesModalOpen, i
         <Box
           sx={{
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
             gap: 2,
           }}
         >
@@ -49,31 +58,55 @@ const InvalidFilesDialog = ({ invalidFilesModalOpen, setInvalidFilesModalOpen, i
               animation: "bounce 0.5s ease",
             }}
           />
-          <Typography variant="h6">Unsupported File Types</Typography>
+          <Typography variant="h6">Files Not Meeting Requirements</Typography>
         </Box>
       </DialogTitle>
       <DialogContent sx={{ textAlign: "center", py: 2 }}>
         <Typography variant="body1" sx={{ mb: 2 }}>
-          The following files are not supported:
+          The following files do not meet the required criteria:
         </Typography>
         <Box
           sx={{
             bgcolor: "grey.100",
             p: 2,
             borderRadius: 1,
-            maxHeight: "150px",
+            maxHeight: "300px",
             overflowY: "auto",
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
           }}
         >
-          {invalidFiles.map((file, index) => (
-            <Typography key={index} variant="body2" color="error" sx={{ mb: 1 }}>
-              {file.name} ({file.type || "unknown type"})
-            </Typography>
-          ))}
+          <Box>
+            {invalidFiles.map((file, index) => (
+              <Typography key={index} variant="body2" color="error" sx={{ mb: 1 }}>
+                {truncateText(file.name, 22)} ({file.type || "unknown type"}) - Unsupported File
+                Type
+              </Typography>
+            ))}
+            {/* Additional text for unsupported files */}
+            {invalidFiles.length > 0 && (
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+                Unsupported files cannot be processed. Please upload files in the correct format.
+              </Typography>
+            )}
+          </Box>
+
+          <Box>
+            {checkNotPassedFiles.map((file, index) => (
+              <Typography key={index} variant="body2" color="error" sx={{ mb: 1 }}>
+                {truncateText(file.name, 22)} ({file.type || "unknown type"}) - Failed Validation
+              </Typography>
+            ))}
+            {/* Additional text for validation-failed files */}
+            {checkNotPassedFiles.length > 0 && (
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+                Files that failed validation may contain incorrect or missing data. Please review
+                and re-upload.
+              </Typography>
+            )}
+          </Box>
         </Box>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          Only .csv, .txt and .npd files are supported.
-        </Typography>
       </DialogContent>
       <DialogActions
         sx={{
@@ -97,7 +130,7 @@ const InvalidFilesDialog = ({ invalidFilesModalOpen, setInvalidFilesModalOpen, i
             transition: "all 0.2s ease",
           }}
         >
-          OK
+          Close
         </Button>
       </DialogActions>
     </StyledDialog>

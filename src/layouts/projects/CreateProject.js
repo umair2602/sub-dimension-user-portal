@@ -18,7 +18,12 @@ import { useNavigate } from "react-router-dom";
 import Visualization from "components/projects/create-project/visualization/Visualization";
 import GenerateReport from "components/projects/create-project/generate-report/GenerateReport";
 
-const steps = ["Step 1", "Step 2", "Step 3", "Step 4"];
+const steps = [
+  { subtitle: "Step 1", title: "Project creation" },
+  { subtitle: "Step 2", title: "Data Input" },
+  { subtitle: "Step 3", title: "Visualization" },
+  { subtitle: "Step 4", title: "Reporting" },
+];
 
 const CreateProject = () => {
   const navigate = useNavigate();
@@ -179,25 +184,42 @@ const CreateProject = () => {
               }}
             >
               <Stepper linear="true" activeStep={activeStep}>
-                {steps.map((label) => (
-                  <Step key={label}>
-                    <StepLabel
-                      disabled
-                      StepIconProps={{
-                        sx: {
-                          "&.Mui-active": {
-                            color: "#007aff",
+                {steps.map((step) => {
+                  const labelProps = {};
+                  labelProps.optional = (
+                    <Typography variant="caption" sx={{ fontSize: "0.68rem" }}>
+                      {step.subtitle}
+                    </Typography>
+                  );
+                  return (
+                    <Step key={step.title}>
+                      <StepLabel
+                        disabled
+                        StepIconProps={{
+                          sx: {
+                            "&.Mui-active": {
+                              color: "#007aff",
+                            },
+                            "&.Mui-completed": {
+                              color: "#007aff",
+                            },
                           },
-                          "&.Mui-completed": {
-                            color: "#007aff",
+                        }}
+                        sx={{
+                          "& .MuiStepLabel-labelContainer": {
+                            position: "relative",
+                            lineHeight: "4px",
+                            top: "7px",
                           },
-                        },
-                      }}
-                    >
-                      {label}
-                    </StepLabel>
-                  </Step>
-                ))}
+                          "& .MuiStepLabel-label": {},
+                        }}
+                        {...labelProps}
+                      >
+                        {step.title}
+                      </StepLabel>
+                    </Step>
+                  );
+                })}
               </Stepper>
             </Box>
 

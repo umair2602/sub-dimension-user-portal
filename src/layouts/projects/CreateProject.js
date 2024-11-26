@@ -149,7 +149,7 @@ const CreateProject = () => {
       case 2:
         return <Visualization files={files} parsedData={parsedData} />;
       case 3:
-        return <GenerateReport />;
+        return <GenerateReport inputFields={inputFields} parsedData={parsedData}/>;
       default:
         return null;
     }

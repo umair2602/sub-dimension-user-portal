@@ -11,12 +11,12 @@ const xAxis = {
 
 const ScatterPlot = ({ data }) => {
   // Processed dataset for Chart.js
-  const dataset1 = data.map((item) => ({
+  const dataset1 = data?.map((item) => ({
     x: parseFloat(item[xAxis.d1_col]),
     y: parseFloat(item["North"]),
   }));
 
-  const dataset2 = data.map((item) => ({
+  const dataset2 = data?.map((item) => ({
     x: parseFloat(item[xAxis.d2_col]),
     y: parseFloat(item["North"]),
   }));

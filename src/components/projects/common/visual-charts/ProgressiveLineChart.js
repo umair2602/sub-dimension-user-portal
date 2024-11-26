@@ -28,12 +28,12 @@ const parseDate = (dateStr) => {
 
 const LineChart = ({ data }) => {
   // Processed dataset for Chart.js
-  const dataset1 = data.map((item) => ({
+  const dataset1 = data?.map((item) => ({
     x: parseDate(item?.Time).getTime(),
     y: parseFloat(item[yAxis.d1_col]),
   }));
 
-  const dataset2 = data.map((item) => ({
+  const dataset2 = data?.map((item) => ({
     x: parseDate(item?.Time).getTime(),
     y: parseFloat(item[yAxis.d1_col]),
   }));

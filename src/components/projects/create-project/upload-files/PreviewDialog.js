@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
 import {
   Typography,
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
   Box,
   CircularProgress,
+  TablePagination,
+  IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import Loader from "components/Loader/Loader";
 
 const PreviewDialog = ({ dialogOpen, setDialogOpen, selectedFileData, setSelectedFileData }) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(1000);
 
   useEffect(() => {
     if (dialogOpen) {
@@ -25,7 +30,7 @@ const PreviewDialog = ({ dialogOpen, setDialogOpen, selectedFileData, setSelecte
             setLoading(false);
             return 100;
           }
-          return prevProgress + 10;
+          return prevProgress + 25;
         });
       }, 500);
       return () => clearInterval(interval);
@@ -36,9 +41,33 @@ const PreviewDialog = ({ dialogOpen, setDialogOpen, selectedFileData, setSelecte
     setSelectedFileData([]);
     setDialogOpen(false);
   };
+
+  // Handle Pagination
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Paginated Data
+  const paginatedData = (selectedFileData || []).slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   return (
     <Dialog open={dialogOpen} onClose={onDialogClose} maxWidth="xl" fullWidth>
-      <DialogTitle>File Preview</DialogTitle>
+      <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Box>File Preview</Box>
+        <Box>
+          <IconButton onClick={onDialogClose} sx={{ padding: 0 }}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      </DialogTitle>
       <DialogContent dividers>
         <Box
           sx={{
@@ -67,61 +96,75 @@ const PreviewDialog = ({ dialogOpen, setDialogOpen, selectedFileData, setSelecte
               </Typography>
             </Box>
           ) : selectedFileData && selectedFileData.length ? (
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr
-                  style={{
-                    position: "sticky",
-                    top: 0,
-                    backgroundColor: "#f5f5f5",
-                    zIndex: 1,
-                  }}
-                >
-                  {Object.keys(selectedFileData[0] || {}).map((header, index) => (
-                    <th
-                      key={index}
-                      style={{
-                        padding: "12px 8px",
-                        borderBottom: "2px solid #ddd",
-                        textAlign: "left",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {selectedFileData.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
-                    {Object.values(row).map((cell, cellIndex) => (
-                      <td
-                        key={cellIndex}
+            <>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr
+                    style={{
+                      position: "sticky",
+                      top: 0,
+                      backgroundColor: "#f5f5f5",
+                      zIndex: 1,
+                    }}
+                  >
+                    {Object.keys(selectedFileData[0] || {}).map((header, index) => (
+                      <th
+                        key={index}
                         style={{
-                          padding: "8px",
-                          borderBottom: "1px solid #ddd",
+                          padding: "12px 8px",
+                          borderBottom: "2px solid #ddd",
+                          textAlign: "left",
+                          fontWeight: 600,
                         }}
                       >
-                        {cell}
-                      </td>
+                        {header}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {paginatedData.map((row, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {Object.values(row).map((cell, cellIndex) => (
+                        <td
+                          key={cellIndex}
+                          style={{
+                            padding: "8px",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
           ) : (
-            <Typography variant="body2" color="textSecondary">
-              No data available to display.
-            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <Loader />
+            </Box>
           )}
         </Box>
+        <TablePagination
+          component="div"
+          count={selectedFileData?.length || 0}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          rowsPerPageOptions={[100, 500, 1000, 2000]}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onDialogClose} color="primary">
-          Close
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };

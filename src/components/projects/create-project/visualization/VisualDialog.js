@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import {
   Typography,
-  Button,
   Dialog,
   DialogTitle,
-  DialogActions,
   Box,
   CircularProgress,
   Tabs,
   Tab,
+  IconButton,
 } from "@mui/material";
 import ScatterChart from "components/projects/common/visual-charts/ScatterChart";
 import LineChart from "components/projects/common/visual-charts/ProgressiveLineChart";
+import CloseIcon from "@mui/icons-material/Close";
+import Loader from "components/Loader/Loader";
 
 const tabsList = [{ label: "GPS1 vs GPS2" }, { label: "Gyro 1 vs Gyro 2" }];
 
@@ -36,7 +37,7 @@ const VisualDialog = ({
             setLoading(false);
             return 100;
           }
-          return prevProgress + 10;
+          return prevProgress + 25;
         });
       }, 500);
       return () => clearInterval(interval);
@@ -55,7 +56,14 @@ const VisualDialog = ({
 
   return (
     <Dialog open={visualDialogOpen} onClose={onDialogClose} maxWidth="xl" fullWidth>
-      <DialogTitle>Visual Preview</DialogTitle>
+      <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Box>Visual Preview</Box>
+        <Box>
+          <IconButton onClick={onDialogClose} sx={{ padding: 0 }}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      </DialogTitle>
       <Box
         sx={{
           height: "80vh",
@@ -117,7 +125,7 @@ const VisualDialog = ({
                 justifyContent: "center",
                 alignItems: "center",
                 padding: 2,
-                maxHeight: 450,
+                maxHeight: 500,
               }}
             >
               {tabIndex === 0 && <ScatterChart data={selectedFileData} />}
@@ -131,7 +139,7 @@ const VisualDialog = ({
                 justifyContent: "center",
                 alignItems: "center",
                 padding: 2,
-                maxHeight: 450,
+                maxHeight: 500,
               }}
             >
               <ScatterChart data={selectedFileData} />
@@ -142,23 +150,26 @@ const VisualDialog = ({
                 justifyContent: "center",
                 alignItems: "center",
                 padding: 2,
-                maxHeight: 450,
+                maxHeight: 500,
               }}
             >
               <LineChart data={selectedFileData} />
             </Box>
           </Box>
         ) : (
-          <Typography variant="body2" color="textSecondary">
-            No visuals available to display.
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <Loader />
+          </Box>
         )}
       </Box>
-      <DialogActions>
-        <Button onClick={onDialogClose} color="primary">
-          Close
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };

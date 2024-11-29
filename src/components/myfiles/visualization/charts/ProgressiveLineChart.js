@@ -20,18 +20,21 @@ const yAxis = {
 };
 
 const parseDate = (dateStr) => {
+  if (dateStr === undefined) {
+    return new Date();
+  }
   return parse(dateStr, "dd.MM.yyyy HH:mm:ss", new Date());
 };
 
 const LineChart = ({ data }) => {
   // Processed dataset for Chart.js
-  const dataset1 = data.map((item) => ({
-    x: parseDate(item.Time).getTime(),
+  const dataset1 = data?.map((item) => ({
+    x: parseDate(item?.Time).getTime(),
     y: parseFloat(item[yAxis.d1_col]),
   }));
 
-  const dataset2 = data.map((item) => ({
-    x: parseDate(item.Time).getTime(),
+  const dataset2 = data?.map((item) => ({
+    x: parseDate(item?.Time).getTime(),
     y: parseFloat(item[yAxis.d1_col]),
   }));
 

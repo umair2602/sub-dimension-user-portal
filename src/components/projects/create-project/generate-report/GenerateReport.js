@@ -40,7 +40,7 @@ const GenerateReport = ({ inputFields, parsedData }) => {
                 error={!!inputErrors[field.name]}
                 helperText={inputErrors[field.name]}
                 fullWidth
-                disabled
+                inputProps={{ readOnly: true }}
                 sx={{
                   minWidth: "300px",
                 }}

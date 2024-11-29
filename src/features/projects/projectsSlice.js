@@ -1,9 +1,9 @@
-import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   formData: {
-    projectName: "",
-    companyName: "",
+    project_name: "",
+    company_name: "",
     client: "",
     vessel: "",
     details: "",
@@ -37,18 +37,15 @@ const projectsSlice = createSlice({
     },
     resetStore: () => initialState,
 
-    addProjects: (state, action) => {
-      const project = {
-        ...{
-          _id: nanoid(),
-        },
-        ...action.payload,
-      };
-
-      state.projects.unshift(project);
+    addExistingProjects: (state, action) => {
+      state.projects = action.payload;
+    },
+    addProject: (state, action) => {
+      const project = action.payload;
+      state.projects.push(project);
     },
     removeProjects: (state, action) => {
-      state.projects = state.projects.filter((project) => project._id !== action.payload);
+      state.projects = state.projects.filter((project) => project.id !== action.payload);
     },
   },
 });
@@ -59,7 +56,8 @@ export const {
   clearInputError,
   resetExceptProjects,
   resetStore,
-  addProjects,
+  addExistingProjects,
+  addProject,
   removeProjects,
 } = projectsSlice.actions;
 

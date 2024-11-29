@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Stepper,
-  Typography,
-  Step,
-  Box,
-  Card,
-  CardContent,
-  StepLabel,
-} from "@mui/material";
+import { Button, Stepper, Typography, Step, Box, StepLabel, CircularProgress } from "@mui/material";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import ProjectForm from "components/projects/create-project/project-form/ProjectForm";
 import UploadFiles from "components/projects/create-project/upload-files/UploadFiles";
@@ -17,6 +8,10 @@ import { setInputError, resetExceptProjects } from "features/projects/projectsSl
 import { useNavigate } from "react-router-dom";
 import Visualization from "components/projects/create-project/visualization/Visualization";
 import GenerateReport from "components/projects/create-project/generate-report/GenerateReport";
+import { jwtDecode } from "jwt-decode";
+import { apiRequest } from "services/apiRequest";
+import urlService from "services/urlService";
+import { addProject } from "features/projects/projectsSlice";
 
 const steps = [
   { subtitle: "Step 1", title: "Project creation" },
@@ -33,6 +28,7 @@ const CreateProject = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [files, setFiles] = useState([]);
   const [parsedData, setParsedData] = useState([]);
+  const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -43,8 +39,8 @@ const CreateProject = () => {
   const inputFields = [
     {
       label: "Project Name",
-      name: "projectName",
-      value: formData.projectName,
+      name: "project_name",
+      value: formData.project_name,
       placeholder: "Enter project name",
       multiline: false,
       rows: "1",
@@ -52,8 +48,8 @@ const CreateProject = () => {
     },
     {
       label: "Company Name",
-      name: "companyName",
-      value: formData.companyName,
+      name: "company_name",
+      value: formData.company_name,
       placeholder: "Enter company name",
       multiline: false,
       rows: "1",
@@ -103,11 +99,43 @@ const CreateProject = () => {
     if (activeStep === 0 && !validateFormData()) {
       return; // return if form validation fails
     }
+
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleUpload = async () => {
     if (activeStep === 1 && files.length === 0) {
       return;
     }
 
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    const payload = new FormData();
+    // Append `project_info` as a JSON string
+    payload.append("project_info", JSON.stringify(formData));
+    // Append 'files' to the FormData
+    files.forEach((file) => {
+      payload.append("files", file);
+    });
+
+    const storedToken = localStorage.getItem("token");
+    const decodedToken = jwtDecode(storedToken);
+
+    try {
+      setUploadBtnLoading(true);
+
+      const response = await apiRequest.post(
+        urlService.projects,
+        payload,
+        { user_name: decodedToken.sub },
+        { "Content-Type": "multipart/form-data" }
+      );
+
+      dispatch(addProject(response));
+      handleNext();
+    } catch (error) {
+      console.error("Error posting data:", error);
+    } finally {
+      setUploadBtnLoading(false);
+    }
   };
 
   // Handle back button
@@ -149,7 +177,7 @@ const CreateProject = () => {
       case 2:
         return <Visualization files={files} parsedData={parsedData} />;
       case 3:
-        return <GenerateReport inputFields={inputFields} parsedData={parsedData}/>;
+        return <GenerateReport inputFields={inputFields} parsedData={parsedData} />;
       default:
         return null;
     }
@@ -242,10 +270,15 @@ const CreateProject = () => {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={handleNext}
-                  sx={{ color: "white !important" }}
+                  onClick={handleUpload}
+                  sx={{ color: "white !important", paddingX: 3.7 }}
+                  disabled={uploadBtnLoading}
                 >
-                  Save and Next
+                  {uploadBtnLoading ? (
+                    <CircularProgress size={20} sx={{ color: "white !important" }} />
+                  ) : (
+                    "Save"
+                  )}
                 </Button>
               )}
               {activeStep < steps.length - 1 && activeStep !== 1 && (

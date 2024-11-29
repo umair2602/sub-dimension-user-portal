@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Typography, Card, CardContent, IconButton, Tooltip } from "@mui/material";
-import { Visibility } from "@mui/icons-material";
+import { QueryStats } from "@mui/icons-material";
 import VisualDialog from "./VisualDialog";
 
 const Visualization = ({ files, parsedData }) => {
@@ -46,9 +46,9 @@ const Visualization = ({ files, parsedData }) => {
                   </Typography>
                 </Box>
                 <Box>
-                  <Tooltip title="Preview">
+                  <Tooltip title="Visualize">
                     <IconButton onClick={openVisualPreview(index)}>
-                      <Visibility color="blue" />
+                      <QueryStats color="blue" />
                     </IconButton>
                   </Tooltip>
                 </Box>

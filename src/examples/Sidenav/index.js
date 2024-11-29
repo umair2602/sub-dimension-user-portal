@@ -48,9 +48,8 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   };
 
   const navLinks = [
-    { title: "Dashboard", path: "/dashboard" },
-    { title: "My Files", path: "/myfiles" },
     { title: "Projects", path: "/projects" },
+    { title: "My Files", path: "/myfiles" },
   ];
 
   return (

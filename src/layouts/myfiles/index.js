@@ -25,6 +25,7 @@ import Collapse from '@mui/material/Collapse';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { useSnackbar } from 'notistack';
 import LinearProgress from '@mui/material/LinearProgress';
+import Visualization from "components/myfiles/visualization";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   margin: 0,
@@ -146,9 +147,13 @@ const isValidFileType = (file) => {
     'text/plain',
     'application/vnd.ms-excel', // For some CSV files
     '.csv',
-    '.txt'
+    '.txt',
+    '.npd',
   ];
-  return validTypes.some(type => file.type === type || file.name.endsWith(type));
+
+  return validTypes.some(type =>
+    file.type === type || file.name.toLowerCase().endsWith(type.toLowerCase())
+  );
 };
 
 const PreviewModalDialog = styled(Dialog)(({ theme }) => ({
@@ -339,9 +344,15 @@ function Dashboard() {
     setSelectedUploadedFile(null);
   };
 
+  // const getUploadedFile = async (url) => {
+  //   const res = await axios.get(url, { responseType: 'text' })
+  //   setPreviewUploadedFile(res.data);
+  // }
+
   const handleUploadedFilePreview = (file) => {
     setPreviewUploadedFile(file);
     handleUploadedFileMenuClose();
+    // getUploadedFile(file?.file_url);
   };
 
   const handleUploadedFileDelete = async (file) => {
@@ -457,7 +468,7 @@ function Dashboard() {
                   <input
                     type="file"
                     multiple
-                    accept=".csv, .txt"
+                    accept=".csv, .txt, .npd"
                     hidden
                     onChange={handleFileUpload}
                   />
@@ -570,6 +581,7 @@ function Dashboard() {
                                 )}
                               </Box>
                             )}
+                            <Visualization visualData={parsedData[index]?.data}/>
                           </Box>
                         )}
                       </CardContent>
@@ -652,6 +664,8 @@ function Dashboard() {
   }, [storedToken]); // Re-fetch when token changes
 
   const handleFileUpload = (event) => {
+    // console.log(event.target.files, 'event.target.files')
+
     const uploadedFiles = Array.from(event.target.files);
     const validFiles = [];
     const invalidFiles = [];
@@ -672,7 +686,7 @@ function Dashboard() {
     if (validFiles.length > 0) {
       setPreviewModalOpen(true);
       
-      setTimeout(() => {
+      setTimeout(() => { //
         setFiles(prevFiles => [...prevFiles, ...validFiles]);
         const newLoadingStates = {};
         validFiles.forEach(file => {
@@ -680,13 +694,13 @@ function Dashboard() {
         });
         setFileLoadingStates(prev => ({ ...prev, ...newLoadingStates }));
         validFiles.forEach(file => readFileContent(file));
-        setFilesSubmitted(false);
+        setFilesSubmitted(false); //
       }, 100);
     }
   };
 
   const readFileContent = (file) => {
-    setIsParsingFile(true);
+    setIsParsingFile(true); //
     const reader = new FileReader();
     
     reader.onload = (e) => {
@@ -720,7 +734,7 @@ function Dashboard() {
         ...prev,
         [file.name]: false
       }));
-      setIsParsingFile(false);
+      setIsParsingFile(false); //
     };
 
     reader.onerror = () => {
@@ -734,7 +748,7 @@ function Dashboard() {
         ...prev,
         [file.name]: false
       }));
-      setIsParsingFile(false);
+      setIsParsingFile(false); //
     };
 
     reader.readAsText(file);
@@ -754,7 +768,7 @@ function Dashboard() {
   const handleFileRemove = (index) => {
     setFiles(files.filter((_, i) => i !== index));
     setParsedData(parsedData.filter((_, i) => i !== index));
-    setFilesSubmitted(false);
+    setFilesSubmitted(false); //
   };
 
   const handleDragOver = (event) => {
@@ -797,11 +811,11 @@ function Dashboard() {
       });
       setFileLoadingStates(prev => ({ ...prev, ...newLoadingStates }));
       validFiles.forEach(file => readFileContent(file));
-      setFilesSubmitted(false);
+      setFilesSubmitted(false); //
       setPreviewModalOpen(true);
     }
     
-    setIsDragging(false);
+    setIsDragging(false); //
   };
 
   const handleSubmitFiles = () => {
@@ -957,7 +971,7 @@ function Dashboard() {
           ))}
         </Box>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          Only .csv and .txt files are supported.
+          Only .csv, .txt and .npd files are supported.
         </Typography>
       </DialogContent>
       <DialogActions sx={{ 
@@ -1102,10 +1116,12 @@ function Dashboard() {
       }}>
         <Button 
           variant="outlined" 
+          color="info"
           onClick={handleDeleteDialogClose}
           sx={{ 
             minWidth: '120px',
             borderRadius: 2,
+            color: 'grey !important',
           }}
         >
           Cancel
@@ -1118,6 +1134,7 @@ function Dashboard() {
           sx={{ 
             minWidth: '120px',
             borderRadius: 2,
+            color: 'white !important',
           }}
         >
           {isDeleting ? (
@@ -1126,7 +1143,7 @@ function Dashboard() {
               Deleting...
             </>
           ) : (
-            'Delete'
+            'Yes'
           )}
         </Button>
       </DialogActions>
@@ -1363,7 +1380,7 @@ function Dashboard() {
             <input
               type="file"
               multiple
-              accept=".csv, .txt"
+              accept=".csv, .txt, .npd"
               hidden
               onChange={handleFileUpload}
             />
@@ -1372,6 +1389,94 @@ function Dashboard() {
             Supported Formats: {supportedFormats}
           </Typography>
         </UploadSection>
+
+        {files.length > 0 && (
+          <Box sx={{ mt: 3 }}>
+            <FilesButton
+              onClick={() => setPreviewModalOpen(true)}
+              disableRipple
+            >
+              <FileIconWrapper className="file-icon-wrapper">
+                <InsertDriveFileIcon 
+                  sx={{ 
+                    color: 'primary.main',
+                    fontSize: 24
+                  }} 
+                />
+                <Typography
+                  className="file-count"
+                  sx={{
+                    position: 'absolute',
+                    top: -8,
+                    right: -8,
+                    backgroundColor: 'primary.main',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: 22,
+                    height: 22,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                    transition: 'all 0.2s ease-in-out',
+                    border: (theme) => `2px solid ${theme.palette.background.paper}`,
+                  }}
+                >
+                  {files.length}
+                </Typography>
+              </FileIconWrapper>
+              
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'flex-start',
+                flex: 1
+              }}>
+                <Typography 
+                  variant="subtitle2" 
+                  color="text.secondary"
+                  sx={{ fontSize: '0.75rem', mb: 0.5 }}
+                >
+                  Selected Files
+                </Typography>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    fontWeight: 600,
+                    color: 'text.primary',
+                    lineHeight: 1.2
+                  }}
+                >
+                  {files.length} {files.length === 1 ? 'File' : 'Files'} Ready
+                </Typography>
+              </Box>
+
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  color: 'primary.main'
+                }}
+              >
+                <KeyboardArrowRightIcon />
+              </Box>
+            </FilesButton>
+
+            {files.some(file => file.size > 5 * 1024 * 1024) && (
+              <Tooltip title="Some files are large and may take longer to process">
+                <WarningIcon 
+                  color="warning" 
+                  sx={{ 
+                    ml: 2,
+                    verticalAlign: 'middle'
+                  }} 
+                />
+              </Tooltip>
+            )}
+          </Box>
+        )}
 
         <Box sx={{ mt: 4 }}>
           <Typography variant="h5" gutterBottom sx={{ 
@@ -1505,12 +1610,6 @@ function Dashboard() {
             open={Boolean(uploadedFileMenu)}
             onClose={handleUploadedFileMenuClose}
           >
-            <MenuItem onClick={() => handleUploadedFilePreview(selectedUploadedFile)}>
-              <ListItemIcon>
-                <VisibilityIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Preview</ListItemText>
-            </MenuItem>
             <MenuItem onClick={() => handleUploadedFileEdit(selectedUploadedFile)}>
               <ListItemIcon>
                 <EditIcon fontSize="small" />
@@ -1554,95 +1653,7 @@ function Dashboard() {
             <Typography variant="body2">Processing files...</Typography>
           </Box>
         )}
-
-        {files.length > 0 && (
-          <Box sx={{ mb: 3 }}>
-            <FilesButton
-              onClick={() => setPreviewModalOpen(true)}
-              disableRipple
-            >
-              <FileIconWrapper className="file-icon-wrapper">
-                <InsertDriveFileIcon 
-                  sx={{ 
-                    color: 'primary.main',
-                    fontSize: 24
-                  }} 
-                />
-                <Typography
-                  className="file-count"
-                  sx={{
-                    position: 'absolute',
-                    top: -8,
-                    right: -8,
-                    backgroundColor: 'primary.main',
-                    color: 'white',
-                    borderRadius: '50%',
-                    width: 22,
-                    height: 22,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                    transition: 'all 0.2s ease-in-out',
-                    border: (theme) => `2px solid ${theme.palette.background.paper}`,
-                  }}
-                >
-                  {files.length}
-                </Typography>
-              </FileIconWrapper>
-              
-              <Box sx={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'flex-start',
-                flex: 1
-              }}>
-                <Typography 
-                  variant="subtitle2" 
-                  color="text.secondary"
-                  sx={{ fontSize: '0.75rem', mb: 0.5 }}
-                >
-                  Selected Files
-                </Typography>
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    fontWeight: 600,
-                    color: 'text.primary',
-                    lineHeight: 1.2
-                  }}
-                >
-                  {files.length} {files.length === 1 ? 'File' : 'Files'} Ready
-                </Typography>
-              </Box>
-
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center',
-                  color: 'primary.main'
-                }}
-              >
-                <KeyboardArrowRightIcon />
-              </Box>
-            </FilesButton>
-
-            {files.some(file => file.size > 5 * 1024 * 1024) && (
-              <Tooltip title="Some files are large and may take longer to process">
-                <WarningIcon 
-                  color="warning" 
-                  sx={{ 
-                    ml: 2,
-                    verticalAlign: 'middle'
-                  }} 
-                />
-              </Tooltip>
-            )}
-          </Box>
-        )}
-
+        
         {/* Success Modal */}
         <StyledDialog 
           open={successModalOpen} 

@@ -1,23 +1,23 @@
-import Dashboard from "layouts/dashboard";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import MyFiles from "layouts/myfiles";
+import Projects from "layouts/projects";
 import PrivateRoute from "components/PrivateRoute";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-import FolderIcon from '@mui/icons-material/Folder';
+import FolderIcon from "@mui/icons-material/Folder";
 
 const routes = [
   {
     type: "collapse",
-    name: "Dashboard",
-    key: "dashboard",
-    icon: <Icon fontSize="small">dashboard</Icon>,
-    route: "/dashboard",
+    name: "Projects",
+    key: "projects",
+    icon: <FolderIcon fontSize="small" />,
+    route: "/projects",
     component: (
       <PrivateRoute>
-        <Dashboard />
+        <Projects />
       </PrivateRoute>
     ),
   },

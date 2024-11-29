@@ -6,7 +6,7 @@ import typography from "assets/theme/base/typography";
 // App name React Helper Functions
 import pxToRem from "assets/theme/functions/pxToRem";
 
-const { white, text, info, secondary } = colors;
+const { white, text, info, secondary, error } = colors;
 const { size } = typography;
 
 const contained = {
@@ -72,6 +72,18 @@ const contained = {
       backgroundColor: secondary.focus,
     },
   },
+
+  error: {
+    backgroundColor: error.main,
+
+    "&:hover": {
+      backgroundColor: error.main,
+    },
+
+    "&:focus:not(:hover)": {
+      backgroundColor: error.focus,
+    },
+  }
 };
 
 export default contained;

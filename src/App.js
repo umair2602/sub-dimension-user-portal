@@ -16,8 +16,11 @@ import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 
 // Pages
-import Dashboard from "layouts/dashboard";
 import MyFiles from "layouts/myfiles";
+import Profile from "layouts/profile";
+import Projects from "layouts/projects";
+import CreateProject from "layouts/projects/CreateProject";
+import ViewProject from "layouts/projects/ViewProject";
 
 export default function App() {
   const [controller] = useMaterialUIController();
@@ -89,17 +92,19 @@ export default function App() {
 
       <Routes>
         {/* Define explicit routes first */}
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<Profile/>}/>
         <Route path="/myfiles" element={<MyFiles />} />
-        
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/projects/create-project" element={<CreateProject />} />
+        <Route path="/projects/:id" element={<ViewProject />} />
         {/* Then map any additional routes from your routes config */}
         {getRoutes(routes)}
         
-        {/* Redirect root to dashboard */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        {/* Redirect root to projects */}
+        <Route path="/" element={<Navigate to="/projects" replace />} />
         
         {/* Catch any undefined routes */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/projects" replace />} />
       </Routes>
     </ThemeProvider>
     </SnackbarProvider>
